@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe Vault</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="login-container" class="centered">
+    <h1>Safe Vault</h1>
+    <form id="login-form">
+      <input type="password" id="passphrase" placeholder="Enter your passphrase" required autocomplete="current-password">
+      <button type="submit">Login</button>
+    </form>
+    <div id="login-error" class="error"></div>
+  </div>
+  <div id="vault-container" class="hidden">
+    <header>
+      <h2>Emergency Digital Vault</h2>
+      <button id="logout-btn">Logout</button>
+    </header>
+    <nav>
+      <button class="category-btn" data-category="Identity">Identity</button>
+      <button class="category-btn" data-category="Education">Education</button>
+      <button class="category-btn" data-category="Medical">Medical</button>
+      <button class="category-btn" data-category="Financial">Financial</button>
+      <button class="category-btn" data-category="Others">Others</button>
+    </nav>
+    <section id="upload-section">
+      <input type="file" id="file-input" multiple>
+      <select id="category-select">
+        <option value="Identity">Identity</option>
+        <option value="Education">Education</option>
+        <option value="Medical">Medical</option>
+        <option value="Financial">Financial</option>
+        <option value="Others">Others</option>
+      </select>
+      <button id="upload-btn">Upload</button>
+    </section>
+    <section id="files-section">
+      <h3 id="current-category">Identity</h3>
+      <ul id="file-list"></ul>
+      <div id="preview-modal" class="modal hidden">
+        <div class="modal-content">
+          <span id="close-preview" class="close">&times;</span>
+          <div id="file-preview"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="vault.js"></script>
+</body>
+</html>

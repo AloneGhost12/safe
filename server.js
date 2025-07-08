@@ -18,10 +18,7 @@ app.get('/', (req, res) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL || 'mongodb+srv://admin:secure1326@cluster1.p0toplm.mongodb.net/safevault?retryWrites=true&w=majority&appName=Cluster1', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(process.env.MONGO_URL || 'mongodb+srv://admin:secure1326@cluster1.p0toplm.mongodb.net/safevault?retryWrites=true&w=majority&appName=Cluster1');
 
 const fileSchema = new mongoose.Schema({
   name: String,

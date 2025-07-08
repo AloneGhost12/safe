@@ -1,3 +1,9 @@
+// Serve static files and index.html for frontend
+const path = require('path');
+app.use(express.static(path.join(__dirname)));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 // Minimalist Express server for Safe Vault with MongoDB
 const express = require('express');
 const mongoose = require('mongoose');

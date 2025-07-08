@@ -20,6 +20,8 @@ body {
 .hidden {
   display: none;
 }
+
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +30,8 @@ body {
   background: rgba(30,30,30,0.8);
   border-radius: 8px 8px 0 0;
 }
-}
+
+nav {
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -36,7 +39,6 @@ body {
   background: rgba(30,30,30,0.7);
   border-radius: 0 0 8px 8px;
   padding: 0.5rem 0;
-}
 }
 .category-btn {
   background: transparent;

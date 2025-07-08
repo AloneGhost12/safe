@@ -1,9 +1,10 @@
 body {
-  background: #fff;
-  color: #111;
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  color: #f5f5f5;
   font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
 }
 .centered {
   display: flex;
@@ -11,45 +12,62 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background: rgba(34,34,34,0.7);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  margin: 2rem;
 }
 .hidden {
   display: none;
 }
-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid #444;
   padding: 1rem;
+  background: rgba(30,30,30,0.8);
+  border-radius: 8px 8px 0 0;
 }
-nav {
+}
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin: 1rem 0;
+  background: rgba(30,30,30,0.7);
+  border-radius: 0 0 8px 8px;
+  padding: 0.5rem 0;
+}
 }
 .category-btn {
-  background: #fff;
-  color: #111;
-  border: 1px solid #111;
+  background: transparent;
+  color: #f5f5f5;
+  border: 1px solid #888;
   padding: 0.5rem 1rem;
   cursor: pointer;
   border-radius: 4px;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  font-weight: 500;
 }
 .category-btn.active, .category-btn:hover {
-  background: #111;
-  color: #fff;
+  background: #fff;
+  color: #232526;
+  border: 1px solid #fff;
 }
 #upload-section {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
   margin-bottom: 1rem;
+  background: rgba(30,30,30,0.7);
+  border-radius: 8px;
+  padding: 1rem;
 }
 #files-section {
   max-width: 600px;
   margin: 0 auto;
+  background: rgba(30,30,30,0.7);
+  border-radius: 8px;
+  padding: 1rem;
 }
 #file-list {
   list-style: none;
@@ -59,11 +77,23 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #444;
   padding: 0.5rem 0;
 }
 button {
   font-size: 1rem;
+  background: #232526;
+  color: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin: 0 0.2rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+button:hover {
+  background: #fff;
+  color: #232526;
 }
 .error {
   color: #c00;
@@ -79,14 +109,15 @@ button {
   z-index: 1000;
 }
 .modal-content {
-  background: #fff;
-  color: #111;
+  background: #232526;
+  color: #f5f5f5;
   padding: 2rem;
   border-radius: 8px;
   max-width: 90vw;
   max-height: 90vh;
   overflow: auto;
   position: relative;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 .close {
   position: absolute;
@@ -94,6 +125,7 @@ button {
   right: 1rem;
   font-size: 2rem;
   cursor: pointer;
+  color: #fff;
 }
 @media (max-width: 600px) {
   header, .modal-content {

@@ -2,7 +2,7 @@
 // No analytics, no tracking, no sharing
 
 const CATEGORIES = ["Identity", "Education", "Medical", "Financial", "Others"];
-const STORAGE_KEY = "safevault_files";
+const API_URL = "https://safe-1.onrender.com/api"; // Change to your Render backend URL
 let vaultKey = null;
 let files = {};
 let currentCategory = "Identity";
@@ -71,30 +71,30 @@ async function decryptFile(encrypted, key) {
 }
 
 // --- Storage helpers ---
-function saveFiles() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
+// Save file to backend
+async function saveFiles() {
+  // Not used anymore
 }
-function loadFiles() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return {};
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return {};
-  }
+// Load files from backend
+async function loadFiles(category) {
+  const res = await fetch(`${API_URL}/files/${category}`);
+  if (!res.ok) return [];
+  return await res.json();
 }
 
 // --- UI Logic ---
-function showCategory(category) {
+async function showCategory(category) {
   currentCategory = category;
   currentCategoryTitle.textContent = category;
   categoryBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.category === category));
-  renderFileList();
+  await renderFileList();
 }
 
-function renderFileList() {
-  fileList.innerHTML = "";
+async function renderFileList() {
+  fileList.innerHTML = "<li><em>Loading...</em></li>";
+  files[currentCategory] = await loadFiles(currentCategory);
   const catFiles = files[currentCategory] || [];
+  fileList.innerHTML = "";
   if (catFiles.length === 0) {
     fileList.innerHTML = '<li><em>No files uploaded.</em></li>';
     return;
@@ -113,16 +113,19 @@ function renderFileList() {
 
 window.previewFile = async function(category, idx) {
   const f = files[category][idx];
-  const decrypted = await decryptFile(f.encrypted, vaultKey);
-  const blob = new Blob([decrypted], { type: f.type });
+  // Fetch file from backend
+  const res = await fetch(`${API_URL}/file/${f._id}`);
+  const fileData = await res.json();
+  const decrypted = await decryptFile(fileData.encrypted, vaultKey);
+  const blob = new Blob([decrypted], { type: fileData.type });
   filePreview.innerHTML = "";
-  if (f.type.startsWith("image/")) {
+  if (fileData.type.startsWith("image/")) {
     const img = document.createElement("img");
     img.src = URL.createObjectURL(blob);
     img.style.maxWidth = "80vw";
     img.style.maxHeight = "70vh";
     filePreview.appendChild(img);
-  } else if (f.type === "application/pdf") {
+  } else if (fileData.type === "application/pdf") {
     const iframe = document.createElement("iframe");
     iframe.src = URL.createObjectURL(blob);
     iframe.width = "100%";
@@ -136,54 +139,46 @@ window.previewFile = async function(category, idx) {
 
 window.downloadFile = async function(category, idx) {
   const f = files[category][idx];
-  const decrypted = await decryptFile(f.encrypted, vaultKey);
-  const blob = new Blob([decrypted], { type: f.type });
+  const res = await fetch(`${API_URL}/file/${f._id}`);
+  const fileData = await res.json();
+  const decrypted = await decryptFile(fileData.encrypted, vaultKey);
+  const blob = new Blob([decrypted], { type: fileData.type });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = f.name;
+  a.download = fileData.name;
   a.click();
 };
 
-window.deleteFile = function(category, idx) {
-  files[category].splice(idx, 1);
-  saveFiles();
+window.deleteFile = async function(category, idx) {
+  const f = files[category][idx];
+  await fetch(`${API_URL}/file/${f._id}`, { method: "DELETE" });
   renderFileList();
 };
 
-closePreview.onclick = () => previewModal.classList.add("hidden");
+// Remove closePreview event since the close icon is removed
+// closePreview.onclick = () => previewModal.classList.add("hidden");
 window.onclick = e => {
   if (e.target === previewModal) previewModal.classList.add("hidden");
 };
 
 // --- Login Logic ---
+const HARDCODED_PASSWORD = "1326";
 loginForm.onsubmit = async e => {
   e.preventDefault();
   loginError.textContent = "";
   const passphrase = passphraseInput.value;
+  if (passphrase !== HARDCODED_PASSWORD) {
+    loginError.textContent = "Incorrect passphrase.";
+    return;
+  }
   try {
     vaultKey = await getKeyFromPassphrase(passphrase);
-    files = loadFiles();
-    // Try to decrypt one file to check passphrase
-    let valid = true;
-    outer: for (const cat of CATEGORIES) {
-      if (files[cat]) {
-        for (const f of files[cat]) {
-          try {
-            await decryptFile(f.encrypted, vaultKey);
-            break outer;
-          } catch {
-            valid = false;
-            break outer;
-          }
-        }
-      }
-    }
-    if (!valid) throw new Error();
+    // files = loadFiles();
     loginContainer.classList.add("hidden");
     vaultContainer.classList.remove("hidden");
     showCategory(currentCategory);
   } catch {
-    loginError.textContent = "Incorrect passphrase or corrupted vault.";
+    loginError.textContent = "Error unlocking vault.";
   }
 };
 
@@ -201,22 +196,24 @@ categoryBtns.forEach(btn => {
 uploadBtn.onclick = async () => {
   if (!fileInput.files.length) return;
   const cat = categorySelect.value;
-  if (!files[cat]) files[cat] = [];
   for (const file of fileInput.files) {
     const encrypted = await encryptFile(file, vaultKey);
-    files[cat].push({
+    const data = {
       name: file.name,
       type: file.type,
+      category: cat,
       encrypted
+    };
+    await fetch(`${API_URL}/upload`, {
+      method: "POST",
+      body: new URLSearchParams({ data: JSON.stringify(data) })
     });
   }
-  saveFiles();
   fileInput.value = "";
   showCategory(cat);
 };
 
 // --- Initial State ---
 (function init() {
-  files = loadFiles();
   showCategory(currentCategory);
 })();
